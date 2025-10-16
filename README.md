@@ -31,7 +31,7 @@ This project is optimized for deployment on any Docker host, with specific instr
 
 #### 5. Configure Port & Domain
 - Go to the **"Deploy"** tab for your new app service.
-- Set the **Port** to `3000`. This is the port the application exposes inside the container.
+- Set the **Port** to `3001`. This is the port the application exposes inside the container.
 - Go to the **"Domains"** tab.
 - Add your desired domain or subdomain (e.g., `files.yourdomain.com`) and make sure your DNS is pointing to the server's IP address.
 
@@ -70,5 +70,6 @@ The API will respond with a JSON object containing the direct link to your file.
   "message": "File uploaded successfully.",
   "url": "https://your-app-domain.com/files/xxxxxxxxxxxxxxxx.jpg",
   "expiresIn": "1 minute"
+}
 }
 ```

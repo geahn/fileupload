@@ -5,7 +5,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const UPLOAD_DIR = path.join(__dirname, 'uploads'); // Store uploads in a local directory
 
 // Ensure upload directory exists

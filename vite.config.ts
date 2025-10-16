@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Proxy API requests to the Vercel serverless function endpoint
+      // Proxy API requests to the local backend server during development
       '/api': {
-        target: 'http://localhost:3000', // Assuming the Vercel dev server runs here
+        target: 'http://localhost:3001', 
         changeOrigin: true,
       },
     },
