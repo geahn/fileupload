@@ -1,53 +1,38 @@
-# =================================================================
-# Stage 1: Build the React Frontend
-# =================================================================
-# This stage uses a full Node.js image to install all dependencies
-# (including development ones) and create a production build of the React app.
+# Stage 1: Build the React frontend
+# This stage installs all dependencies (including devDependencies) and builds the static assets.
 FROM node:20-alpine AS build
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json to leverage Docker's layer caching.
-# This step only re-runs if package.json changes.
+# Copy package.json and install all dependencies
 COPY package.json ./
-
-# Install all dependencies, including devDependencies needed for the build
 RUN npm install
 
-# Copy the rest of the application source code into the container
+# Copy the rest of the application source code
 COPY . .
 
-# Run the build script defined in package.json.
-# This will compile the TypeScript/React code and create a static 'dist' folder.
+# Run the build script defined in package.json. This creates the 'dist' directory.
 RUN npm run build
 
-# =================================================================
-# Stage 2: Create the Final Production Image
-# =================================================================
-# This stage starts from a fresh, lightweight Node.js image.
+
+# Stage 2: Create the final, lean production image
+# This stage starts from a fresh, small Node.js image
 FROM node:20-alpine
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json again to install only production dependencies
+# Copy package.json again and install ONLY production dependencies
 COPY package.json ./
-
-# Install ONLY the dependencies needed to run the server in production.
-# --omit=dev skips devDependencies like Vite, TypeScript, etc.
 RUN npm install --omit=dev --no-color
 
-# Copy the pre-built frontend assets from the 'build' stage into our final image
+# Copy the pre-built frontend assets from the 'build' stage
 COPY --from=build /app/dist ./dist
 
 # Copy the production server script
 COPY server.js .
 
-# Expose port 3001 to the outside world. This must match the port in your server.js
-# and your Easypanel configuration.
+# Expose the port that the server will listen on
 EXPOSE 3001
 
-# The command that will be executed when the container starts.
-# This runs your Express server.
+# The command that will be executed when the container starts
 CMD ["node", "server.js"]
