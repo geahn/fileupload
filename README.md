@@ -1,8 +1,14 @@
 # TempFileDrop API for Vercel
 
-This is a simple Node.js API built with Express to temporarily host files. You can upload a binary file, and the API will return a direct link to it. The file will be automatically deleted from the server after 1 minute.
+This is a full-stack application with a React frontend and a Node.js API to temporarily host files. You can upload a binary file, and the API will return a direct link to it. 
 
 This project is optimized for deployment on [Vercel](https://vercel.com).
+
+## Important Note on File Deletion
+
+Due to the stateless and short-lived nature of Vercel's serverless functions, **automatic file deletion after exactly 1 minute is not guaranteed.**
+
+The backend uses the temporary `/tmp` directory for storage. While files in this directory are not permanent, they are only cleared when Vercel's platform recycles the function instance. A `setTimeout` call to delete the file will not work reliably as the function instance will likely be shut down before the timer completes. The file will be available for a short period, but will eventually become inaccessible. For a simple temporary host, this behavior is often acceptable.
 
 ## How to Deploy to Vercel
 
@@ -12,35 +18,22 @@ This project is optimized for deployment on [Vercel](https://vercel.com).
 
 ### Steps via GitHub
 
-1.  **Create a new GitHub repository** and push the contents of this project (`api/index.js`, `package.json`, `vercel.json`, `index.html`, and `README.md`) to it.
+1.  **Create a new GitHub repository** and push all project files to it.
 
 2.  **Import Project on Vercel:**
     - Go to your Vercel dashboard.
     - Click "Add New... -> Project".
     - Select your new GitHub repository.
-    - Vercel will automatically detect the project settings. No changes are needed.
+    - Vercel should automatically detect the project as a "Vite" (or similar frontend) project. This is correct. It will handle the frontend and the `api` directory automatically.
 
 3.  **Deploy:**
     - Click the "Deploy" button.
 
-That's it! Vercel will build and deploy your API. You will get a production URL to use.
-
-### Steps via Vercel CLI
-
-1.  **Login to Vercel:**
-    Open a terminal in the project's root directory and run:
-    ```sh
-    vercel login
-    ```
-
-2.  **Deploy:**
-    Run the deploy command:
-    ```sh
-    vercel --prod
-    ```
-    Vercel will guide you through a few questions to set up the project and deploy it.
+That's it! Vercel will build and deploy your full-stack application. You will get a production URL to use.
 
 ## API Usage
+
+You can use the deployed frontend or use the API directly.
 
 ### Upload a File
 
@@ -65,8 +58,8 @@ The API will respond with a JSON object containing the direct link to your file.
 {
   "message": "File uploaded successfully.",
   "url": "https://your-deployment-url.vercel.app/files/xxxxxxxxxxxxxxxx.jpg",
-  "expiresIn": "1 minute"
+  "expiresIn": "approximately 1 minute (best-effort)"
 }
 ```
 
-You can open the `url` in your browser. This link will become invalid after 1 minute.
+You can open the `url` in your browser. This link will become invalid when the serverless instance is recycled.

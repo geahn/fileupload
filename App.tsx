@@ -6,37 +6,48 @@ import FileDisplay from './components/FileDisplay';
 
 const App: React.FC = () => {
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const FILE_LIFETIME_MS = 1 * 60 * 1000; // 1 minute
 
-  const handleFileUpload = (file: File) => {
-    // If there's an old file, revoke its blobUrl first to prevent memory leaks
-    if (uploadedFile) {
-      URL.revokeObjectURL(uploadedFile.blobUrl);
-    }
+  const handleFileUpload = async (file: File) => {
+    setIsLoading(true);
+    setError(null);
+    setUploadedFile(null);
 
-    const blobUrl = URL.createObjectURL(file);
-    
-    // Simulate the backend URL for display and copy purposes
-    const extension = file.name.split('.').pop() ? `.${file.name.split('.').pop()}` : '';
-    const uniqueSuffix = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-    const simulatedUrl = `http://localhost:3000/files/${uniqueSuffix}${extension}`;
-    
-    const expiryTimestamp = Date.now() + FILE_LIFETIME_MS;
-    
-    setUploadedFile({
-      file,
-      url: simulatedUrl, // Use the realistic, simulated URL for display
-      blobUrl: blobUrl,   // Keep the real blob URL for memory management
-      expiryTimestamp,
-    });
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload file.');
+      }
+
+      const result = await response.json();
+      const expiryTimestamp = Date.now() + FILE_LIFETIME_MS;
+
+      setUploadedFile({
+        file,
+        url: result.url,
+        expiryTimestamp,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleFileDeletion = useCallback(() => {
-    if (uploadedFile) {
-      URL.revokeObjectURL(uploadedFile.blobUrl);
-      setUploadedFile(null);
-    }
-  }, [uploadedFile]);
+    setUploadedFile(null);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-4 font-sans">
@@ -50,18 +61,30 @@ const App: React.FC = () => {
           </p>
         </header>
         <main className="p-6 md:p-8">
-          {!uploadedFile ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-64">
+              <div className="w-12 h-12 border-4 border-dashed rounded-full animate-spin border-blue-400"></div>
+              <p className="mt-4 text-gray-300">Uploading...</p>
+            </div>
+          ) : error ? (
+             <div className="text-center h-64 flex flex-col justify-center items-center">
+                <p className="text-red-400">{error}</p>
+                <button
+                    onClick={() => setError(null)}
+                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+                >
+                    Try Again
+                </button>
+            </div>
+          ) : !uploadedFile ? (
             <FileUpload onFileUpload={handleFileUpload} />
           ) : (
             <FileDisplay fileData={uploadedFile} onFileExpired={handleFileDeletion} />
           )}
         </main>
       </div>
-      <footer className="mt-8 text-center text-gray-500 text-sm">
-        <p>This is a frontend simulation. No files are uploaded to a server.</p>
-        <p className="mt-1">
-          A full implementation requires a backend service, possibly containerized with Docker.
-        </p>
+       <footer className="mt-8 text-center text-gray-500 text-sm">
+        <p>Powered by Vercel Serverless Functions.</p>
       </footer>
     </div>
   );

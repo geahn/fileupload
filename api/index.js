@@ -3,10 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-
 const app = express();
 const UPLOAD_DIR = '/tmp/uploads'; // Use the /tmp directory for Vercel
-const FILE_LIFETIME = 1 * 60 * 1000; // 1 minute in milliseconds
 
 // Ensure upload directory exists in the /tmp folder
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -28,38 +26,31 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // POST endpoint for file upload
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded.' });
   }
 
-  // Construct the URL based on the request headers
-  // Vercel provides the VERCEL_URL env var for the deployment's URL
+  // Construct the URL based on the request headers from Vercel's proxy
   const host = req.headers['x-forwarded-host'] || req.get('host');
-  const protocol = host.startsWith('localhost') ? 'http' : 'https';
-  const fileUrl = `${protocol}://${host}/files/${req.file.filename}`;
-  const filePath = req.file.path;
-
-  // Schedule file deletion
-  setTimeout(() => {
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(`Error deleting file ${filePath}:`, err);
-      } else {
-        console.log(`Successfully deleted temporary file: ${filePath}`);
-      }
-    });
-  }, FILE_LIFETIME);
+  const protocol = req.headers['x-forwarded-proto'] || (host.startsWith('localhost') ? 'http' : 'https');
+  const fileUrl = `${protocol}://${host}/api/files/${req.file.filename}`;
+  
+  // SERVERLESS CAVEAT:
+  // In a serverless environment like Vercel, using setTimeout for file deletion is unreliable.
+  // The function instance that handles the upload may be shut down or frozen before the
+  // timeout completes, meaning the file will never be deleted.
+  // The `/tmp` directory is temporary by nature and will eventually be cleared by the platform.
 
   res.status(200).json({
     message: 'File uploaded successfully.',
     url: fileUrl,
-    expiresIn: '1 minute',
+    expiresIn: 'approximately 1 minute (best-effort)',
   });
 });
 
 // GET endpoint to serve the temporary files from /tmp
-app.get('/files/:filename', (req, res) => {
+app.get('/api/files/:filename', (req, res) => {
     const { filename } = req.params;
     // Sanitize filename to prevent directory traversal
     const safeFilename = path.basename(filename);

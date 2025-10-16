@@ -1,21 +1,37 @@
 {
   "name": "temp-file-api-vercel",
   "version": "1.0.0",
-  "description": "A simple API to temporarily host files on Vercel.",
-  "main": "api/index.js",
+  "description": "A full-stack application to temporarily host files on Vercel.",
+  "type": "module",
   "scripts": {
-    "start": "node api/index.js"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "keywords": [
     "api",
     "express",
     "vercel",
-    "file-upload"
+    "file-upload",
+    "react",
+    "vite"
   ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "react": "^19.0.0-rc.0",
+    "react-dom": "^19.0.0-rc.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
   }
 }

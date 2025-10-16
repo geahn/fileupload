@@ -1,5 +1,5 @@
 {
-  "name": "TempFileDrop API",
-  "description": "A Node.js API to temporarily host a binary file. Upload a file via a POST request to get a direct temporary link. The file is automatically deleted after 5 minutes. Designed to run in Docker.",
+  "name": "TempFileDrop",
+  "description": "A full-stack application to temporarily host files. The React frontend communicates with a Node.js API backend to provide a temporary, direct link to uploaded files. Files are automatically deleted after 1 minute. Optimized for Vercel deployment.",
   "requestFramePermissions": []
 }

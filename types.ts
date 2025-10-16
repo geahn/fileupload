@@ -1,6 +1,5 @@
 export interface UploadedFile {
-  file: File;
-  url: string; // The simulated display URL e.g., http://.../file.pdf
-  blobUrl: string; // The actual browser blob URL for memory management
+  file: File; // Keep the original file object to display name and size
+  url: string; // The real, temporary URL from the backend API
   expiryTimestamp: number;
 }
