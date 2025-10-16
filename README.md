@@ -1,35 +1,44 @@
-# TempFileDrop API
+# TempFileDrop API for Vercel
 
 This is a simple Node.js API built with Express to temporarily host files. You can upload a binary file, and the API will return a direct link to it. The file will be automatically deleted from the server after 1 minute.
 
-The entire application is designed to be run within a Docker container.
+This project is optimized for deployment on [Vercel](https://vercel.com).
 
-## How to Run
+## How to Deploy to Vercel
 
 ### Prerequisites
-- [Docker](https://www.docker.com/get-started) installed on your machine.
+- A [Vercel](https://vercel.com/signup) account.
+- [Vercel CLI](https://vercel.com/docs/cli) installed on your machine (optional, you can also use GitHub integration).
 
-### Steps
+### Steps via GitHub
 
-1.  **Save Files:**
-    Save all the provided files (`server.js`, `package.json`, `Dockerfile`, `.dockerignore`, `README.md`) into a new directory on your local machine.
+1.  **Create a new GitHub repository** and push the contents of this project (`api/index.js`, `package.json`, `vercel.json`, `index.html`, and `README.md`) to it.
 
-2.  **Build the Docker image:**
-    Open a terminal in the directory containing the files and run:
+2.  **Import Project on Vercel:**
+    - Go to your Vercel dashboard.
+    - Click "Add New... -> Project".
+    - Select your new GitHub repository.
+    - Vercel will automatically detect the project settings. No changes are needed.
+
+3.  **Deploy:**
+    - Click the "Deploy" button.
+
+That's it! Vercel will build and deploy your API. You will get a production URL to use.
+
+### Steps via Vercel CLI
+
+1.  **Login to Vercel:**
+    Open a terminal in the project's root directory and run:
     ```sh
-    docker build -t temp-file-api .
+    vercel login
     ```
 
-3.  **Run the Docker container:**
-    After the image is built, run the container:
+2.  **Deploy:**
+    Run the deploy command:
     ```sh
-    docker run -p 3000:3000 -d --name temp-file-container temp-file-api
+    vercel --prod
     ```
-    - `-p 3000:3000`: Maps port 3000 on your host machine to port 3000 in the container.
-    - `-d`: Runs the container in detached mode (in the background).
-    - `--name temp-file-container`: Gives the container a memorable name.
-
-The API will now be running at `http://localhost:3000`.
+    Vercel will guide you through a few questions to set up the project and deploy it.
 
 ## API Usage
 
@@ -42,10 +51,11 @@ The API will now be running at `http://localhost:3000`.
 
 #### Example using cURL
 
+Replace `your-deployment-url.vercel.app` with the actual URL from your Vercel deployment.
+
 ```sh
-curl -F "file=@/path/to/your/file.jpg" http://localhost:3000/upload
+curl -F "file=@/path/to/your/file.jpg" https://your-deployment-url.vercel.app/upload
 ```
-*Replace `/path/to/your/file.jpg` with the actual path to the file you want to upload.*
 
 #### Successful Response
 
@@ -54,9 +64,9 @@ The API will respond with a JSON object containing the direct link to your file.
 ```json
 {
   "message": "File uploaded successfully.",
-  "url": "http://localhost:3000/files/xxxxxxxxxxxxxxxx.jpg",
+  "url": "https://your-deployment-url.vercel.app/files/xxxxxxxxxxxxxxxx.jpg",
   "expiresIn": "1 minute"
 }
 ```
 
-You can open the `url` in your browser to view or download the file. This link will become invalid after 1 minute when the file is deleted from the server.
+You can open the `url` in your browser. This link will become invalid after 1 minute.

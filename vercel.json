@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/upload",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/files/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}

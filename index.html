@@ -1,24 +1,61 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TempFileDrop - Temporary File Hosting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  <script type="importmap">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempFileDrop API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background-color: #1a1a1a;
+        }
+        h1 {
+            color: #fff;
+        }
+        code {
+            display: block;
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+            color: #c5c8c6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+<script type="importmap">
 {
   "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-gray-900 text-white">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body>
+    <div class="container">
+        <h1>TempFileDrop API</h1>
+        <p>This is a temporary file hosting API endpoint.</p>
+        <p>To use it, send a POST request to the <code>/upload</code> endpoint.</p>
+        <p>Example using cURL:</p>
+        <code>curl -F "file=@/path/to/your/file.jpg" [this-url]/upload</code>
+    </div>
+<script type="module" src="/index.tsx"></script>
+</body>
 </html>
