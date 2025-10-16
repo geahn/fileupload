@@ -1,0 +1,5 @@
+{
+  "name": "TempFileDrop API",
+  "description": "A Node.js API to temporarily host a binary file. Upload a file via a POST request to get a direct temporary link. The file is automatically deleted after 5 minutes. Designed to run in Docker.",
+  "requestFramePermissions": []
+}
