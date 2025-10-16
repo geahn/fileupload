@@ -19,6 +19,7 @@ const App: React.FC = () => {
     formData.append('file', file);
 
     try {
+      // Use a relative path, as the API is served from the same origin
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
@@ -84,7 +85,7 @@ const App: React.FC = () => {
         </main>
       </div>
        <footer className="mt-8 text-center text-gray-500 text-sm">
-        <p>Powered by Vercel Serverless Functions.</p>
+        <p>Powered by Docker.</p>
       </footer>
     </div>
   );
